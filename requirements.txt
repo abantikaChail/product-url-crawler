@@ -2,3 +2,4 @@ aiohttp
 beautifulsoup4
 tldextract
 tqdm
+async_timeout
