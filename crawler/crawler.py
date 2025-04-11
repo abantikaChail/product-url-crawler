@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+import async_timeout
 from bs4 import BeautifulSoup
 from crawler.config import MAX_CONCURRENCY, MAX_DEPTH
 from crawler.url_filter import is_product_url, is_valid_url
@@ -14,13 +15,19 @@ class Crawler:
         self.sem = asyncio.Semaphore(MAX_CONCURRENCY)
 
     async def fetch(self, session, url):
-        try:
-            async with self.sem:
-                async with session.get(url, timeout=10) as resp:
+    try:
+        async with self.sem:
+            with async_timeout.timeout(10):  # Enforce 10s max per request
+                async with session.get(url) as resp:
                     if 'text/html' in resp.headers.get('Content-Type', ''):
                         return await resp.text()
-        except:
-            return None
+                    else:
+                        print(f"Skipped non-HTML content: {url}")
+    except asyncio.TimeoutError:
+        print(f"Timeout fetching: {url}")
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+    return None
 
     async def parse(self, session, url, depth=0):
         if url in self.seen or depth > MAX_DEPTH:
@@ -39,6 +46,7 @@ class Crawler:
                 self.product_urls.add(full_url)
             elif self.base_url in full_url:
                 await self.parse(session, full_url, depth + 1)
+        print(f"Finished: {url}")
 
     async def run(self):
         async with aiohttp.ClientSession() as session:
