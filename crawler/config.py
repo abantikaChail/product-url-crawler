@@ -1,4 +1,3 @@
-# config.py
 PRODUCT_PATTERNS = [
     r"/product[s]?/[a-zA-Z0-9\-_]+",
     r"/p/[a-zA-Z0-9\-_]+",
