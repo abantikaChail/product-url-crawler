@@ -1,5 +1,8 @@
-aiohttp==3.11.16
-async_timeout==5.0.1
-beautifulsoup4==4.13.3
-robotexclusionrulesparser==1.7.1
-tqdm==4.67.1
+aiohttp
+async-timeout
+beautifulsoup4
+tqdm
+robotexclusionrulesparser
+fastapi
+uvicorn
+pydantic
